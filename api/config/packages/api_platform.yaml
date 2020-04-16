@@ -1,3 +1,5 @@
+parameters:
+    env(ELASTICSEARCH_HOST): 'http://localhost:9200'
 api_platform:
     title: Hello API Platform
     version: 1.0.0
@@ -10,3 +12,5 @@ api_platform:
     # Mercure integration, remove if unwanted
     mercure:
         hub_url: '%env(MERCURE_SUBSCRIBE_URL)%'
+    elasticsearch:
+        hosts: ['%env(ELASTICSEARCH_HOST)%']
