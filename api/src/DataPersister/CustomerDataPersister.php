@@ -6,6 +6,7 @@ use ApiPlatform\Core\DataPersister\ContextAwareDataPersisterInterface;
 use App\Entity\Customer;
 use Doctrine\ORM\EntityManagerInterface;
 use Elasticsearch\ClientBuilder;
+use App\Doctrine\CustomUuidGenerator;
 
 final class CustomerDataPersister implements ContextAwareDataPersisterInterface
 {
@@ -25,10 +26,33 @@ final class CustomerDataPersister implements ContextAwareDataPersisterInterface
 
     public function persist($data, array $context = [])
     {
+        if (isset($context['collection_operation_name']) && $context['collection_operation_name'] === 'post' && isset($context['persist']) && $context['persist'] === true) {
+            $data->setId(CustomUuidGenerator::getUuid());
+        }
+
         $this->entityManager->persist($data);
-        $this->entityManager->flush();
 
         if (isset($context['collection_operation_name']) && $context['collection_operation_name'] === 'post' && isset($context['persist']) && $context['persist'] === true) {
+            $params = [
+                'index' => 'customer',
+                'type' => '_doc',
+                'id' => $data->getId(),
+                'body' => [
+                    'first_name' => $data->getFirstname(),
+                    'last_name' => $data->getLastname(),
+                ],
+            ];
+
+            $response = $this->client->index($params);
+        } elseif (isset($context['item_operation_name']) && $context['item_operation_name'] === 'put' && isset($context['persist']) && $context['persist'] === true) {
+            $params = [
+                'index' => 'customer',
+                'type' => '_doc',
+                'id' => $data->getId(),
+            ];
+
+            $response = $this->client->delete($params);
+
             $params = [
                 'index' => 'customer',
                 'type' => '_doc',

@@ -17,7 +17,7 @@ class Customer
      * @ORM\Id
      * @ORM\Column(type="uuid", unique=true)
      * @ORM\GeneratedValue(strategy="CUSTOM")
-     * @ORM\CustomIdGenerator(class="Ramsey\Uuid\Doctrine\UuidGenerator")
+     * @ORM\CustomIdGenerator(class="App\Doctrine\CustomUuidGenerator")
      */
     private $id;
 
