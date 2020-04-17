@@ -1,5 +1,10 @@
 parameters:
-    env(ELASTICSEARCH_HOST): 'http://es01:9200'
+    elasticsearch_mapping_entities: 
+        App\Entity\Customer:
+            index: customer
+            fields:
+                - first_name
+                - last_name
 api_platform:
     title: Hello API Platform
     version: 1.0.0
