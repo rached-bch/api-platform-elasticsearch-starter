@@ -64,6 +64,26 @@ final class CustomerDataPersister implements ContextAwareDataPersisterInterface
             ];
 
             $response = $this->client->index($params);
+        } elseif (isset($context['item_operation_name']) && $context['item_operation_name'] === 'patch' && isset($context['persist']) && $context['persist'] === true) {
+            $params = [
+                'index' => 'customer',
+                'type' => '_doc',
+                'id' => $data->getId(),
+            ];
+
+            $response = $this->client->delete($params);
+
+            $params = [
+                'index' => 'customer',
+                'type' => '_doc',
+                'id' => $data->getId(),
+                'body' => [
+                    'first_name' => $data->getFirstname(),
+                    'last_name' => $data->getLastname(),
+                ],
+            ];
+
+            $response = $this->client->index($params);
         }
 
         return $data;
@@ -71,7 +91,14 @@ final class CustomerDataPersister implements ContextAwareDataPersisterInterface
 
     public function remove($data, array $context = [])
     {
-        $this->entityManager->remove($data);
-        $this->entityManager->flush();
+        $this->entityManager->persist($data);
+
+        $params = [
+            'index' => 'customer',
+            'type' => '_doc',
+            'id' => $data->getId(),
+        ];
+
+        $response = $this->client->delete($params);
     }
 }
