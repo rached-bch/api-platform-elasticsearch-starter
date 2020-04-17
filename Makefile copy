@@ -1,6 +1,0 @@
-CD=$(CURDIR)
-
-start : $(docker-compose) build \
-       $(docker-compose) up -d
-
-stop : docker container stop $(CD)_vulcain_1 $(CD)_api_1 $(CD)_php_1 $(CD)_mercure_1 $(CD)_admin_1 $(CD)_client_1 $(CD)_pgadmin_1 $(CD)_db_1 $(CD)_dev-tls_1
