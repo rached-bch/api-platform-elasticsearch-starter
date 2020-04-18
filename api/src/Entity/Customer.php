@@ -15,7 +15,7 @@ class Customer
     /**
      * @ApiProperty(identifier=true)
      * @ORM\Id
-     * @ORM\Column(type="uuid", unique=true)
+     * @ORM\Column(type="string", unique=true, length=36, options={"fixed" = true})
      * @ORM\GeneratedValue(strategy="CUSTOM")
      * @ORM\CustomIdGenerator(class="App\Doctrine\CustomUuidGenerator")
      */
@@ -36,7 +36,7 @@ class Customer
         return $this->id;
     }
 
-    public function setId(string $id): self
+    public function setId(string $id)
     {
         $this->id = $id;
 

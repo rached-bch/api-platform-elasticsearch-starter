@@ -6,7 +6,6 @@ use ApiPlatform\Core\DataPersister\ContextAwareDataPersisterInterface;
 use App\Entity\Customer;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Elasticsearch\ClientManager;
-use App\Doctrine\CustomUuidGenerator;
 
 final class CustomerDataPersister implements ContextAwareDataPersisterInterface
 {
@@ -27,11 +26,8 @@ final class CustomerDataPersister implements ContextAwareDataPersisterInterface
 
     public function persist($data, array $context = [])
     {
-        if ($this->isPostRequest($context)) {
-            $data->setId(CustomUuidGenerator::getUuid());
-        }
-
         $this->entityManager->persist($data);
+        $this->entityManager->flush();
 
         if ($this->isPostRequest($context)) {
             $this->clientManager->createDocumentFromEntity($data);
@@ -47,9 +43,12 @@ final class CustomerDataPersister implements ContextAwareDataPersisterInterface
 
     public function remove($data, array $context = [])
     {
-        $this->entityManager->persist($data);
+        $user_account = clone $data;
 
-        $this->clientManager->deleteDocumentFromEntity($data);
+        $this->entityManager->remove($data);
+        $this->entityManager->flush();
+
+        $this->clientManager->deleteDocumentFromEntity($user_account);
     }
 
     private function isPostRequest(array $context = []): bool
